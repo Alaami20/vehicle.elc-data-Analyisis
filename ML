@@ -1,0 +1,39 @@
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+
+# Load the ranked data
+per_model = pd.read_csv("/Users/alaamiari/Desktop/ev_results/ev_car_ranking.csv")
+
+X = per_model[["score_battery", "score_age", "score_price"]].fillna(0)
+y = per_model["value_score"]
+
+model = LinearRegression().fit(X, y)
+print("Coefficients:", model.coef_)
+print("Intercept:", model.intercept_)
+
+per_model["predicted_value_score"] = model.predict(X)
+print(per_model[["value_score", "predicted_value_score"]].head())
+
+
+
+from sklearn.linear_model import LinearRegression
+X = per_model[["score_battery", "score_age", "score_price"]]
+y = per_model["value_score"]
+model = LinearRegression().fit(X, y)
+print("Model coefficients:", model.coef_)
+
+
+weights = {"price": 0.5, "battery": 0.3, "age": 0.2}
+plt.bar(weights.keys(), weights.values(), color="teal")
+plt.title("Feature Importance in Value Score")
+plt.show()
+
+
+
+from sklearn.cluster import KMeans
+X = per_model[["score_price", "score_battery", "score_age"]].fillna(0)
+per_model["cluster"] = KMeans(n_clusters=3, random_state=42).fit_predict(X)
+sns.pairplot(per_model, hue="cluster", palette="viridis")
+plt.show()
